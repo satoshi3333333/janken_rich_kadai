@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Filter and Upload Example</title>
+    <style>
+        .ue{
+            font-size: 20px;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .image-container img {
+            margin: 10px;
+            width: 150px;
+            height: auto;
+            display: none; /* 初期状態では非表示 */
+        }
+    </style>
+</head>
+<body>
+    <center><h1>-もふもふ画像ソートくん-</h1></center>
+
+    <!-- メインカテゴリプルダウンメニュー -->
+     <div class="ue">
+    <label for="categorySelect">動物を選択してください:</label>
+    <select id="categorySelect">
+        <option value="all">All</option>
+        <option value="cat">Cat</option>
+        <option value="dog">Dog</option>
+        <option value="bird">Bird</option>
+    </select>
+    <div>
+
+    <!-- サブカテゴリプルダウンメニュー（色） -->
+    <label for="subcategorySelect">色を選択してください:</label>
+    <select id="subcategorySelect">
+        <option value="all">All</option>
+        <option value="black">Black</option>
+        <option value="white">White</option>
+        <option value="yellow">Yellow</option>
+    </select>
+
+    <!-- サブサブカテゴリプルダウンメニュー（大きさ） -->
+    <label for="sizeSelect">大きさを選択してください:</label>
+    <select id="sizeSelect">
+        <option value="all">All</option>
+        <option value="small">Small</option>
+        <option value="large">Large</option>
+    </select>
+
+    <!-- 画像一覧 -->
+    <div class="image-container" id="imageContainer">
+        <img src="bsc.jpeg" alt="Black Small Cat" data-category="cat" data-subcategory="black" data-size="small">
+        <img src="bbc.jpg" alt="Black Large Cat" data-category="cat" data-subcategory="black" data-size="large">
+        <img src="wsc.jpg" alt="White Small Cat" data-category="cat" data-subcategory="white" data-size="small">
+        <img src="wbc.jpg" alt="White Large Cat" data-category="cat" data-subcategory="white" data-size="large">
+        <img src="ysc.jpeg" alt="Yellow Small Cat" data-category="cat" data-subcategory="yellow" data-size="small">
+        <img src="ybc.jpg" alt="Yellow Large Cat" data-category="cat" data-subcategory="yellow" data-size="large">
+
+        <img src="bbd.jpg" alt="Black Large Dog" data-category="dog" data-subcategory="black" data-size="large">
+        <img src="bsd.jpg" alt="Black Small Dog" data-category="dog" data-subcategory="black" data-size="small">
+        <img src="wbd.jpg" alt="White Large Dog" data-category="dog" data-subcategory="white" data-size="large">
+        <img src="wsd.jpg" alt="White Small Dog" data-category="dog" data-subcategory="white" data-size="small">
+        <img src="ybd.jpg" alt="Yellow Large Dog" data-category="dog" data-subcategory="yellow" data-size="large">
+        <img src="ysd.jpg" alt="Yellow Small Dog" data-category="dog" data-subcategory="yellow" data-size="small">
+
+        <img src="bbb.jpg" alt="Black Large Bird" data-category="bird" data-subcategory="black" data-size="large">
+        <img src="bsb.jpg" alt="Black Small Bird" data-category="bird" data-subcategory="black" data-size="small">
+        <img src="wbb.jpg" alt="White Large Bird" data-category="bird" data-subcategory="white" data-size="large">
+        <img src="wsb.jpg" alt="White Small Bird" data-category="bird" data-subcategory="white" data-size="small">
+        <img src="ybb.jpg" alt="Yellow Large Bird" data-category="bird" data-subcategory="yellow" data-size="large">
+        <img src="ysb.jpg" alt="Yellow Small Bird" data-category="bird" data-subcategory="yellow" data-size="small">
+    </div>
+
+    <h2>画像アップロード</h2>
+
+    <!-- 画像アップロードフォーム -->
+    <form id="uploadForm">
+        <label for="uploadImage">画像をアップロードしてください:</label>
+        <input type="file" id="uploadImage" accept="image/*" required>
+
+        <br><label for="uploadCategory">カテゴリ:</label>
+        <select id="uploadCategory" required>
+            <option value="cat">Cat</option>
+            <option value="dog">Dog</option>
+            <option value="bird">Bird</option>
+        </select>
+
+        <!-- サブカテゴリ（色） -->
+        <label for="uploadSubcategory">サブカテゴリ:</label>
+        <select id="uploadSubcategory" required>
+            <option value="black">Black</option>
+            <option value="white">White</option>
+            <option value="yellow">Yellow</option>
+        </select>
+
+        <!-- サブサブカテゴリ（大きさ） -->
+        <label for="uploadSize">大きさ:</label>
+        <select id="uploadSize" required>
+            <option value="small">Small</option>
+            <option value="large">Large</option>
+        </select>
+
+        <button type="submit">アップロード</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 全ての画像を表示
+            $('img').show();
+
+            // サブカテゴリのみで検索を行う関数
+            function filterImages() {
+                var mainCategory = $('#categorySelect').val();
+                var subCategory = $('#subcategorySelect').val();
+                var size = $('#sizeSelect').val();
+
+                // 全ての画像を非表示
+                $('img').hide();
+
+                // セレクタを構築
+                var selector = 'img';
+
+                // メインカテゴリが選択されている場合
+                if (mainCategory !== 'all') {
+                    selector += '[data-category="' + mainCategory + '"]';
+                }
+
+                // サブカテゴリが選択されている場合
+                if (subCategory !== 'all') {
+                    selector += '[data-subcategory="' + subCategory + '"]';
+                }
+
+                // サイズが選択されている場合
+                if (size !== 'all') {
+                    selector += '[data-size="' + size + '"]';
+                }
+
+                // セレクタにマッチした画像を表示
+                $(selector).show();
+            }
+
+            // メインカテゴリが変更された時
+            $('#categorySelect').on('change', function() {
+                filterImages();
+            });
+
+            // サブカテゴリが変更された時
+            $('#subcategorySelect').on('change', function() {
+                filterImages();
+            });
+
+            // サブサブカテゴリが変更された時
+            $('#sizeSelect').on('change', function() {
+                filterImages();
+            });
+
+            // 画像アップロードフォームの処理
+            $('#uploadForm').on('submit', function(event) {
+                event.preventDefault(); // フォームのデフォルト送信を無効化
+
+                var file = $('#uploadImage')[0].files[0]; // 選択された画像ファイル
+                var category = $('#uploadCategory').val(); // 選択されたカテゴリ
+                var subcategory = $('#uploadSubcategory').val(); // 選択されたサブカテゴリ
+                var size = $('#uploadSize').val(); // 選択されたサブサブカテゴリ
+
+                // ファイルリーダーで画像を読み込む
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var imgSrc = e.target.result;
+
+                    // 新しい画像要素を作成
+                    var newImg = $('<img>', {
+                        src: imgSrc,
+                        alt: 'Uploaded Image',
+                        'data-category': category,
+                        'data-subcategory': subcategory,
+                        'data-size': size
+                    });
+
+                    // 画像コンテナに追加
+                    $('#imageContainer').append(newImg);
+
+                    // アップロードされた画像を表示
+                    newImg.show();
+                };
+
+                // 画像ファイルを読み込む
+                if (file) {
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
